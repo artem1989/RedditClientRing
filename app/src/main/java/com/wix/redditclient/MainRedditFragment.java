@@ -1,5 +1,6 @@
 package com.wix.redditclient;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -7,17 +8,24 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-public class MainRedditFragment extends Fragment {
-    /**
-     * The fragment argument representing the section number for this
-     * fragment.
-     */
+import com.wix.redditclient.databinding.MainRedditFragmentBinding;
+import com.wix.redditclient.di.VMFactory;
+import com.wix.redditclient.model.RedditPost;
+import com.wix.redditclient.viewmodels.RedditViewModel;
+
+import javax.inject.Inject;
+
+import dagger.android.support.DaggerFragment;
+
+public class MainRedditFragment extends DaggerFragment {
+
     private static final String ARG_SECTION_NUMBER = "section_number";
 
-    /**
-     * Returns a new instance of this fragment for the given section
-     * number.
-     */
+    MainRedditFragmentBinding binding;
+
+    @Inject
+    VMFactory vmFactory;
+
     public static MainRedditFragment newInstance(int sectionNumber) {
         MainRedditFragment fragment = new MainRedditFragment();
         Bundle args = new Bundle();
@@ -27,11 +35,14 @@ public class MainRedditFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.main_redit_fragment, container, false);
-        TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-        textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
-        return rootView;
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        binding = MainRedditFragmentBinding.inflate(inflater, container, false);
+        RedditViewModel viewModel = ViewModelProviders.of(this, vmFactory).get(RedditViewModel.class);
+        viewModel.fetchPosts().observe(this, this::updatePosts);
+        return binding.getRoot();
+    }
+
+    private void updatePosts(RedditPost redditPost) {
+        binding.sectionLabel.setText(redditPost.getKind());
     }
 }

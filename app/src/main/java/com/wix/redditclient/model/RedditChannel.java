@@ -1,6 +1,7 @@
 package com.wix.redditclient.model;
 
-public class RedditPost {
+public class RedditChannel {
+
     public String getKind() {
         return kind;
     }
