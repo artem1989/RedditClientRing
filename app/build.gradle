@@ -1,0 +1,65 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 27
+
+    defaultConfig {
+        applicationId "com.wix.redditclient"
+        minSdkVersion 21
+        targetSdkVersion 27
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    dataBinding {
+        enabled = true
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+
+    // Android packages
+    implementation "com.android.support:support-v4:${rootProject.ext.support_version}"
+    implementation "com.android.support:appcompat-v7:${rootProject.ext.support_version}"
+    implementation "com.android.support:design:${rootProject.ext.support_version}"
+    implementation "com.android.support:customtabs:${rootProject.ext.support_version}"
+    implementation "com.android.support.constraint:constraint-layout:${rootProject.ext.constraint_version}"
+    implementation "android.arch.lifecycle:extensions:${rootProject.ext.arch_version}"
+    annotationProcessor "android.arch.lifecycle:compiler:${rootProject.ext.arch_version}"
+
+    //Picasso
+    implementation 'com.squareup.picasso:picasso:2.71828'
+
+    //Testing
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+
+    // Network
+    compile "com.squareup.okhttp3:okhttp:${rootProject.ext.okhttp3_version}"
+    compile "com.squareup.okhttp3:logging-interceptor:${rootProject.ext.okhttp3_version}"
+    compile "com.squareup.retrofit2:retrofit:${rootProject.ext.retrofit2_version}"
+    compile "com.squareup.retrofit2:converter-gson:${rootProject.ext.retrofit2_version}"
+    compile 'com.jakewharton.retrofit:retrofit2-rxjava2-adapter:1.0.0'
+
+    //DI
+    compile "com.google.dagger:dagger:${rootProject.ext.dagger_version}"
+    compile "com.google.dagger:dagger-android:${rootProject.ext.dagger_version}"
+    compile "com.google.dagger:dagger-android-support:${rootProject.ext.dagger_version}"
+    annotationProcessor "com.google.dagger:dagger-compiler:${rootProject.ext.dagger_version}"
+    annotationProcessor "com.google.dagger:dagger-android-processor:${rootProject.ext.dagger_version}"
+}
