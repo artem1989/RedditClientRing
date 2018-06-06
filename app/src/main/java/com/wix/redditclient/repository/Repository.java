@@ -21,9 +21,6 @@ import retrofit2.Retrofit;
 public class Repository {
 
     private static final String TAG = Repository.class.getSimpleName();
-    private static final String API_KEY = "api_key";
-    private static final String APPEND_TO_RESPONSE = "append_to_response";
-    private static final String VIDEOS = "videos";
 
     private RedditApi api;
 

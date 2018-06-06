@@ -2,16 +2,19 @@ package com.wix.redditclient;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.wix.redditclient.databinding.MainRedditFragmentBinding;
 import com.wix.redditclient.di.VMFactory;
+import com.wix.redditclient.model.ChildInfo;
+import com.wix.redditclient.model.RedditChild;
 import com.wix.redditclient.model.RedditPost;
 import com.wix.redditclient.viewmodels.RedditViewModel;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -43,6 +46,9 @@ public class MainRedditFragment extends DaggerFragment {
     }
 
     private void updatePosts(RedditPost redditPost) {
-        binding.sectionLabel.setText(redditPost.getKind());
+        List<RedditChild> children = redditPost.getData().getChildren();
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        binding.recyclerView.setHasFixedSize(true);
+        binding.recyclerView.setAdapter(new RedditPostsAdapter(children, getActivity()));
     }
 }

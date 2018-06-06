@@ -1,8 +1,8 @@
 package com.wix.redditclient.model;
 
-public class RedditPost {
-   private String kind;
-   private RedditInfo data;
+public class RedditChild {
+    private String kind;
+    private ChildInfo data;
 
     public String getKind() {
         return kind;
@@ -12,11 +12,11 @@ public class RedditPost {
         this.kind = kind;
     }
 
-    public RedditInfo getData() {
+    public ChildInfo getData() {
         return data;
     }
 
-    public void setData(RedditInfo data) {
+    public void setData(ChildInfo data) {
         this.data = data;
     }
 }
