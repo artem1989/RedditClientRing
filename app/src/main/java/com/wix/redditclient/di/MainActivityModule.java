@@ -1,6 +1,7 @@
 package com.wix.redditclient.di;
 
 import com.wix.redditclient.MainRedditFragment;
+import com.wix.redditclient.WebViewFragment;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
@@ -13,7 +14,7 @@ public abstract class MainActivityModule {
     @ContributesAndroidInjector
     abstract MainRedditFragment providesMainRedditFragment();
 
-//    @FragmentScoped
-//    @ContributesAndroidInjector
-//    abstract DetailsFragment providesDetailsFragment();
+    @FragmentScoped
+    @ContributesAndroidInjector
+    abstract WebViewFragment providesWebViewFragment();
 }

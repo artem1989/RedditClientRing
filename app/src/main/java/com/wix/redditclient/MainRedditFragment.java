@@ -6,10 +6,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 
 import com.wix.redditclient.databinding.MainRedditFragmentBinding;
 import com.wix.redditclient.di.VMFactory;
-import com.wix.redditclient.model.ChildInfo;
+
 import com.wix.redditclient.model.RedditChild;
 import com.wix.redditclient.model.RedditPost;
 import com.wix.redditclient.viewmodels.RedditViewModel;
@@ -28,6 +29,9 @@ public class MainRedditFragment extends DaggerFragment {
 
     @Inject
     VMFactory vmFactory;
+
+    @Inject
+    MainNavigator navigator;
 
     public static MainRedditFragment newInstance(int sectionNumber) {
         MainRedditFragment fragment = new MainRedditFragment();
@@ -49,6 +53,13 @@ public class MainRedditFragment extends DaggerFragment {
         List<RedditChild> children = redditPost.getData().getChildren();
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         binding.recyclerView.setHasFixedSize(true);
-        binding.recyclerView.setAdapter(new RedditPostsAdapter(children, getActivity()));
+        binding.recyclerView.setAdapter(new RedditPostsAdapter(children, this::onItemClick));
+    }
+
+    public void onItemClick(RedditChild item) {
+        WebViewFragment details = WebViewFragment.newInstance(item.getData().getUrl());
+        navigator.navigateTo(R.id.container, details, true);
+//        WebAlertDialog dialog = new WebAlertDialog(getActivity());
+//        dialog.initWithURL(item.getData().getUrl());
     }
 }

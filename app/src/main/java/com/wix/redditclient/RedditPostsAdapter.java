@@ -19,32 +19,39 @@ import java.util.List;
 public class RedditPostsAdapter extends RecyclerView.Adapter<RedditPostsAdapter.ViewHolder> {
 
     private List<RedditChild> posts;
-    private Context context;
+    private OnItemClickListener listener;
+
+    public interface OnItemClickListener {
+        void onItemClick(RedditChild item);
+    }
 
     class ViewHolder extends RecyclerView.ViewHolder {
+
+        View itemView;
         TextView title;
         ImageView image;
 
         ViewHolder(View viewGroup) {
             super(viewGroup);
+            this.itemView = viewGroup;
             this.title = viewGroup.findViewById(R.id.title);
             this.image = viewGroup.findViewById(R.id.imageView);
         }
 
         void bindData(final RedditChild post) {
+            itemView.setOnClickListener(v -> listener.onItemClick(post));
             title.setText(post.getData().getTitle());
-            Picasso.get().load(post.getData().getThumbnail())
-                    .placeholder(R.drawable.placeholder)
-                    .error(R.drawable.error)
-                    .fit()
-                    .tag(context)
+            Picasso.get().load(post.getData().getThumbnail()).placeholder(R.drawable.placeholder).fit()
+                    .tag(itemView.getContext())
                     .into(image);
+
         }
+
     }
 
-    RedditPostsAdapter(List<RedditChild> posts, Context context) {
+    RedditPostsAdapter(List<RedditChild> posts, OnItemClickListener listener) {
         this.posts = posts;
-        this.context = context;
+        this.listener = listener;
     }
 
     @NonNull
