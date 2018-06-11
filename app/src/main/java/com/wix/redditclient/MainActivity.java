@@ -12,13 +12,15 @@ import android.os.Bundle;
 
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 
 import com.wix.redditclient.databinding.MainActivityBinding;
+import com.wix.redditclient.model.DecorationInfo;
 
 import dagger.android.support.DaggerAppCompatActivity;
 
-public class MainActivity extends DaggerAppCompatActivity {
+public class MainActivity extends DaggerAppCompatActivity implements WebViewFragment.OnDecorateToolbarlistener{
 
     MainActivityBinding binding;
 
@@ -33,22 +35,23 @@ public class MainActivity extends DaggerAppCompatActivity {
         binding.tabs.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(binding.container));
     }
 
-
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+    public void decorate(DecorationInfo info) {
+        getSupportActionBar().setDisplayShowHomeEnabled(info.isShowBackArrow());
+        getSupportActionBar().setDisplayHomeAsUpEnabled(info.isShowBackArrow());
+        getSupportActionBar().setDisplayShowTitleEnabled(info.isShowTitle());
+        binding.tabs.setVisibility(info.isShowTabs() ? View.VISIBLE : View.GONE);
     }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {

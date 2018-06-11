@@ -1,6 +1,7 @@
 package com.wix.redditclient;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
@@ -11,6 +12,7 @@ import android.widget.AdapterView;
 import com.wix.redditclient.databinding.MainRedditFragmentBinding;
 import com.wix.redditclient.di.VMFactory;
 
+import com.wix.redditclient.model.DecorationInfo;
 import com.wix.redditclient.model.RedditChild;
 import com.wix.redditclient.model.RedditPost;
 import com.wix.redditclient.viewmodels.RedditViewModel;
@@ -27,6 +29,8 @@ public class MainRedditFragment extends DaggerFragment {
 
     MainRedditFragmentBinding binding;
 
+    private WebViewFragment.OnDecorateToolbarlistener listener;
+
     @Inject
     VMFactory vmFactory;
 
@@ -42,11 +46,29 @@ public class MainRedditFragment extends DaggerFragment {
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if(context instanceof WebViewFragment.OnDecorateToolbarlistener) {
+            listener = (WebViewFragment.OnDecorateToolbarlistener) context;
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = MainRedditFragmentBinding.inflate(inflater, container, false);
         RedditViewModel viewModel = ViewModelProviders.of(this, vmFactory).get(RedditViewModel.class);
         viewModel.fetchPosts().observe(this, this::updatePosts);
         return binding.getRoot();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        DecorationInfo info = new DecorationInfo();
+        info.setShowBackArrow(false);
+        info.setShowTitle(true);
+        info.setShowTabs(true);
+        listener.decorate(info);
     }
 
     private void updatePosts(RedditPost redditPost) {
@@ -58,8 +80,6 @@ public class MainRedditFragment extends DaggerFragment {
 
     public void onItemClick(RedditChild item) {
         WebViewFragment details = WebViewFragment.newInstance(item.getData().getUrl());
-        navigator.navigateTo(R.id.container, details, true);
-//        WebAlertDialog dialog = new WebAlertDialog(getActivity());
-//        dialog.initWithURL(item.getData().getUrl());
+        navigator.navigateTo(R.id.main_content, details, true);
     }
 }

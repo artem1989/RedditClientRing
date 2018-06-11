@@ -57,8 +57,7 @@ public class RedditPostsAdapter extends RecyclerView.Adapter<RedditPostsAdapter.
     @NonNull
     @Override
     public RedditPostsAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        ViewGroup viewGroup = (ViewGroup) LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
-        return new ViewHolder(viewGroup);
+        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false));
     }
 
     @Override

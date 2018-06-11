@@ -1,8 +1,6 @@
 package com.wix.redditclient;
 
-import android.annotation.TargetApi;
-import android.net.Uri;
-import android.os.Build;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -10,23 +8,24 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.ProgressBar;
 
 import com.wix.redditclient.databinding.WebViewFragmentBinding;
+import com.wix.redditclient.model.DecorationInfo;
 
 import dagger.android.support.DaggerFragment;
+
+import static com.wix.redditclient.common.Utils.isNetworkAvailable;
 
 public class WebViewFragment extends DaggerFragment {
 
     private static final String ARG_URL = "url";
 
     private WebViewFragmentBinding binding;
+    private OnDecorateToolbarlistener listener;
 
     public static WebViewFragment newInstance(String url) {
         WebViewFragment fragment = new WebViewFragment();
@@ -34,6 +33,14 @@ public class WebViewFragment extends DaggerFragment {
         args.putString(ARG_URL, url);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if(context instanceof OnDecorateToolbarlistener) {
+            listener = (OnDecorateToolbarlistener) context;
+        }
     }
 
     @Nullable
@@ -46,36 +53,46 @@ public class WebViewFragment extends DaggerFragment {
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
                 binding.progressBar.setVisibility(View.GONE);
+                binding.webReload.setVisibility(View.GONE);
+                boolean isNetworkAvailable = isNetworkAvailable(getContext());
+                if(!isNetworkAvailable){
+                    binding.webReload.setVisibility(View.VISIBLE);
+                }
             }
 
-            @SuppressWarnings("deprecation")
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 view.loadUrl(url);
                 return true;
             }
 
-            @TargetApi(Build.VERSION_CODES.N)
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                view.loadUrl(request.getUrl().toString());
-                return true;
-            }
-
             @Override
             public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
                 super.onReceivedError(view, request, error);
+                binding.webReload.setVisibility(View.VISIBLE);
             }
 
         });
-        binding.details.setWebChromeClient(new WebChromeClient());
+        binding.details.loadUrl(getArguments().getString(ARG_URL));
         return binding.getRoot();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        DecorationInfo info = new DecorationInfo();
+        info.setShowBackArrow(true);
+        info.setShowTitle(true);
+        info.setShowTabs(false);
+        listener.decorate(info);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        binding.details.loadUrl(getArguments().getString(ARG_URL));
     }
 
+    public interface OnDecorateToolbarlistener {
+        void decorate(DecorationInfo info);
+    }
 }
