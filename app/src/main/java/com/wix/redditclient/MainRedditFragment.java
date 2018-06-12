@@ -50,7 +50,7 @@ public class MainRedditFragment extends DaggerFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if(context instanceof WebViewFragment.OnDecorateToolbarlistener) {
+        if (context instanceof WebViewFragment.OnDecorateToolbarlistener) {
             listener = (WebViewFragment.OnDecorateToolbarlistener) context;
         }
     }
@@ -79,15 +79,22 @@ public class MainRedditFragment extends DaggerFragment {
         binding.recyclerView.setHasFixedSize(true);
         adapter = new RedditPostsAdapter(redditPost.getData().getChildren(), this::onItemClick);
         binding.recyclerView.setAdapter(adapter);
+        if (viewModel.getPosts().hasObservers()) {
+            viewModel.getPosts().removeObservers(MainRedditFragment.this);
+        }
+        viewModel.getPosts().observe(this, this::updateRecyclerView);
         binding.recyclerView.addOnScrollListener(new EndlessRecyclerViewScrollListener(layoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                viewModel.fetchPosts(25, viewModel.getPosts().getValue().getData().getAfter()).observe(MainRedditFragment.this, post -> {
-                    adapter.setData(post.getData().getChildren());
-                    view.post(() -> adapter.notifyItemInserted(adapter.getItemCount() - 1));
-                });
+                viewModel.fetchPosts(25, viewModel.getPosts().getValue().getData().getAfter());
             }
         });
+    }
+
+    private void updateRecyclerView(RedditPost post) {
+        int curSize = adapter.getItemCount();
+        adapter.setData(post.getData().getChildren());
+        binding.recyclerView.post(() -> adapter.notifyItemRangeInserted(curSize, adapter.getItemCount() - 1));
     }
 
     public void onItemClick(RedditChild item) {

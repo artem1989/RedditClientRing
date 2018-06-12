@@ -2,6 +2,7 @@ package com.wix.redditclient.viewmodels;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
+import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.MutableLiveData;
@@ -24,11 +25,15 @@ public class RedditViewModel extends AndroidViewModel {
     }
 
     public LiveData<RedditPost> fetchPosts(int offset, String after) {
-        posts.addSource(repository.fetchReddit(offset, after), data -> posts.setValue(data));
+        LiveData<RedditPost> response = repository.fetchReddit(offset, after);
+        posts.addSource(response, data -> {
+            posts.removeSource(response);
+            posts.setValue(data);
+        });
         return posts;
     }
 
-    public LiveData<RedditPost> getPosts() {
+    public MediatorLiveData<RedditPost> getPosts() {
         return posts;
     }
 }
