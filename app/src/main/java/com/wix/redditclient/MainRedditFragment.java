@@ -3,15 +3,15 @@ package com.wix.redditclient;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 
 import com.wix.redditclient.databinding.MainRedditFragmentBinding;
 import com.wix.redditclient.di.VMFactory;
-
 import com.wix.redditclient.model.DecorationInfo;
 import com.wix.redditclient.model.RedditChild;
 import com.wix.redditclient.model.RedditPost;
@@ -30,6 +30,8 @@ public class MainRedditFragment extends DaggerFragment {
     MainRedditFragmentBinding binding;
 
     private WebViewFragment.OnDecorateToolbarlistener listener;
+    private RedditPostsAdapter adapter;
+    private RedditViewModel viewModel;
 
     @Inject
     VMFactory vmFactory;
@@ -56,8 +58,8 @@ public class MainRedditFragment extends DaggerFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = MainRedditFragmentBinding.inflate(inflater, container, false);
-        RedditViewModel viewModel = ViewModelProviders.of(this, vmFactory).get(RedditViewModel.class);
-        viewModel.fetchPosts().observe(this, this::updatePosts);
+        viewModel = ViewModelProviders.of(this, vmFactory).get(RedditViewModel.class);
+        viewModel.fetchPosts(25, null).observe(this, this::updatePosts);
         return binding.getRoot();
     }
 
@@ -72,10 +74,20 @@ public class MainRedditFragment extends DaggerFragment {
     }
 
     private void updatePosts(RedditPost redditPost) {
-        List<RedditChild> children = redditPost.getData().getChildren();
-        binding.recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        binding.recyclerView.setLayoutManager(layoutManager);
         binding.recyclerView.setHasFixedSize(true);
-        binding.recyclerView.setAdapter(new RedditPostsAdapter(children, this::onItemClick));
+        adapter = new RedditPostsAdapter(redditPost.getData().getChildren(), this::onItemClick);
+        binding.recyclerView.setAdapter(adapter);
+        binding.recyclerView.addOnScrollListener(new EndlessRecyclerViewScrollListener(layoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                viewModel.fetchPosts(25, viewModel.getPosts().getValue().getData().getAfter()).observe(MainRedditFragment.this, post -> {
+                    adapter.setData(post.getData().getChildren());
+                    view.post(() -> adapter.notifyItemInserted(adapter.getItemCount() - 1));
+                });
+            }
+        });
     }
 
     public void onItemClick(RedditChild item) {

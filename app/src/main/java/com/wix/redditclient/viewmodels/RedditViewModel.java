@@ -4,6 +4,7 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 
 import com.wix.redditclient.model.RedditPost;
@@ -17,15 +18,17 @@ public class RedditViewModel extends AndroidViewModel {
     private MediatorLiveData<RedditPost> posts = new MediatorLiveData<>();
 
     @Inject
-    public RedditViewModel(@NonNull Application application, Repository repository) {
+    RedditViewModel(@NonNull Application application, Repository repository) {
         super(application);
         this.repository = repository;
     }
 
-    public LiveData<RedditPost> fetchPosts() {
-        posts.addSource(repository.fetchReddit(), data -> {
-            posts.setValue(data);
-        });
+    public LiveData<RedditPost> fetchPosts(int offset, String after) {
+        posts.addSource(repository.fetchReddit(offset, after), data -> posts.setValue(data));
+        return posts;
+    }
+
+    public LiveData<RedditPost> getPosts() {
         return posts;
     }
 }

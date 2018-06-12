@@ -6,8 +6,6 @@ import android.util.Log;
 
 import com.wix.redditclient.model.RedditPost;
 
-import java.util.List;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -29,8 +27,8 @@ public class Repository {
         api = retrofit.create(RedditApi.class);
     }
 
-    public LiveData<RedditPost> fetchReddit() {
-        Call<RedditPost> call = api.getTopPosts();
+    public LiveData<RedditPost> fetchReddit(int postsLimit, String after) {
+        Call<RedditPost> call = api.getTopPosts(postsLimit, after);
         MutableLiveData<RedditPost> data = new MutableLiveData<>();
 
         call.enqueue(new Callback<RedditPost>() {
