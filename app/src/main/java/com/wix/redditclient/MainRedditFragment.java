@@ -3,7 +3,6 @@ package com.wix.redditclient;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -17,6 +16,7 @@ import com.wix.redditclient.model.RedditChild;
 import com.wix.redditclient.model.RedditPost;
 import com.wix.redditclient.viewmodels.RedditViewModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -25,7 +25,7 @@ import dagger.android.support.DaggerFragment;
 
 public class MainRedditFragment extends DaggerFragment {
 
-    private static final String ARG_SECTION_NUMBER = "section_number";
+    private static final int OFFSET = 25;
 
     MainRedditFragmentBinding binding;
 
@@ -39,10 +39,9 @@ public class MainRedditFragment extends DaggerFragment {
     @Inject
     MainNavigator navigator;
 
-    public static MainRedditFragment newInstance(int sectionNumber) {
+    public static MainRedditFragment newInstance() {
         MainRedditFragment fragment = new MainRedditFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_SECTION_NUMBER, sectionNumber);
         fragment.setArguments(args);
         return fragment;
     }
@@ -59,7 +58,7 @@ public class MainRedditFragment extends DaggerFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = MainRedditFragmentBinding.inflate(inflater, container, false);
         viewModel = ViewModelProviders.of(this, vmFactory).get(RedditViewModel.class);
-        viewModel.fetchPosts(25, null).observe(this, this::updatePosts);
+        viewModel.fetchPosts(OFFSET, null).observe(this, this::initPosts);
         return binding.getRoot();
     }
 
@@ -73,7 +72,7 @@ public class MainRedditFragment extends DaggerFragment {
         listener.decorate(info);
     }
 
-    private void updatePosts(RedditPost redditPost) {
+    private void initPosts(RedditPost redditPost) {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         binding.recyclerView.setLayoutManager(layoutManager);
         binding.recyclerView.setHasFixedSize(true);
@@ -86,19 +85,19 @@ public class MainRedditFragment extends DaggerFragment {
         binding.recyclerView.addOnScrollListener(new EndlessRecyclerViewScrollListener(layoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                viewModel.fetchPosts(25, viewModel.getPosts().getValue().getData().getAfter());
+                viewModel.fetchPosts(OFFSET, viewModel.getPosts().getValue().getData().getAfter());
             }
         });
     }
 
     private void updateRecyclerView(RedditPost post) {
         int curSize = adapter.getItemCount();
-        adapter.setData(post.getData().getChildren());
-        binding.recyclerView.post(() -> adapter.notifyItemRangeInserted(curSize, adapter.getItemCount() - 1));
+        adapter.addData(post.getData().getChildren());
+        binding.recyclerView.post(() -> adapter.notifyItemRangeInserted(curSize,adapter.getItemCount() - 1));
     }
 
     public void onItemClick(RedditChild item) {
-        WebViewFragment details = WebViewFragment.newInstance(item.getData().getUrl());
+        WebViewFragment details = WebViewFragment.newInstance(item);
         navigator.navigateTo(R.id.main_content, details, true);
     }
 }

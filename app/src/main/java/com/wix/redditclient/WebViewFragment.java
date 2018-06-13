@@ -1,5 +1,6 @@
 package com.wix.redditclient;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -7,29 +8,36 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebResourceError;
-import android.webkit.WebResourceRequest;
+
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.wix.redditclient.databinding.WebViewFragmentBinding;
+import com.wix.redditclient.di.VMFactory;
 import com.wix.redditclient.model.DecorationInfo;
+import com.wix.redditclient.model.RedditChild;
+import com.wix.redditclient.viewmodels.FavouritesViewModel;
+
+import javax.inject.Inject;
 
 import dagger.android.support.DaggerFragment;
 
-import static com.wix.redditclient.common.Utils.isNetworkAvailable;
+public class WebViewFragment extends DaggerFragment implements View.OnClickListener {
 
-public class WebViewFragment extends DaggerFragment {
-
-    private static final String ARG_URL = "url";
+    private static final String REDDIT_POST = "post";
 
     private WebViewFragmentBinding binding;
     private OnDecorateToolbarlistener listener;
+    private FavouritesViewModel viewModel;
 
-    public static WebViewFragment newInstance(String url) {
+    @Inject
+    VMFactory vmFactory;
+
+    public static WebViewFragment newInstance(RedditChild child) {
         WebViewFragment fragment = new WebViewFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_URL, url);
+        args.putParcelable(REDDIT_POST, child);
         fragment.setArguments(args);
         return fragment;
     }
@@ -37,7 +45,7 @@ public class WebViewFragment extends DaggerFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if(context instanceof OnDecorateToolbarlistener) {
+        if (context instanceof OnDecorateToolbarlistener) {
             listener = (OnDecorateToolbarlistener) context;
         }
     }
@@ -46,17 +54,16 @@ public class WebViewFragment extends DaggerFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = WebViewFragmentBinding.inflate(inflater, container, false);
+        viewModel = ViewModelProviders.of(getActivity(), vmFactory).get(FavouritesViewModel.class);
+        binding.add.setOnClickListener(this);
+        binding.remove.setOnClickListener(this);
         binding.details.getSettings().setJavaScriptEnabled(true);
+        binding.details.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
         binding.details.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
                 binding.progressBar.setVisibility(View.GONE);
-                binding.webReload.setVisibility(View.GONE);
-                boolean isNetworkAvailable = isNetworkAvailable(getContext());
-                if(!isNetworkAvailable){
-                    binding.webReload.setVisibility(View.VISIBLE);
-                }
             }
 
             @Override
@@ -65,14 +72,9 @@ public class WebViewFragment extends DaggerFragment {
                 return true;
             }
 
-            @Override
-            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-                super.onReceivedError(view, request, error);
-                binding.webReload.setVisibility(View.VISIBLE);
-            }
-
         });
-        binding.details.loadUrl(getArguments().getString(ARG_URL));
+        RedditChild item = getArguments().getParcelable(REDDIT_POST);
+        binding.details.loadUrl(item.getData().getUrl());
         return binding.getRoot();
     }
 
@@ -82,13 +84,26 @@ public class WebViewFragment extends DaggerFragment {
         DecorationInfo info = new DecorationInfo();
         info.setShowBackArrow(true);
         info.setShowTitle(true);
-        info.setShowTabs(false);
         listener.decorate(info);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.add:
+                viewModel.addToFavourites(getArguments().getParcelable(REDDIT_POST));
+                break;
+            case R.id.remove:
+                viewModel.removeFromFavourites(getArguments().getParcelable(REDDIT_POST));
+                break;
+            default:
+                break;
+        }
     }
 
     public interface OnDecorateToolbarlistener {

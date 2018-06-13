@@ -19,8 +19,12 @@ public class RedditPostsAdapter extends RecyclerView.Adapter<RedditPostsAdapter.
     private List<RedditChild> posts;
     private OnItemClickListener listener;
 
-    public void setData(List<RedditChild> children) {
+    public void addData(List<RedditChild> children) {
         posts.addAll(children);
+    }
+
+    public void setData(List<RedditChild> children) {
+        posts = children;
     }
 
     public interface OnItemClickListener {

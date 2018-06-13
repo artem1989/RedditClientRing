@@ -2,10 +2,8 @@ package com.wix.redditclient.viewmodels;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
-import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
-import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 
 import com.wix.redditclient.model.RedditPost;
@@ -26,10 +24,7 @@ public class RedditViewModel extends AndroidViewModel {
 
     public LiveData<RedditPost> fetchPosts(int offset, String after) {
         LiveData<RedditPost> response = repository.fetchReddit(offset, after);
-        posts.addSource(response, data -> {
-            posts.removeSource(response);
-            posts.setValue(data);
-        });
+        posts.addSource(response, data -> posts.setValue(data));
         return posts;
     }
 
