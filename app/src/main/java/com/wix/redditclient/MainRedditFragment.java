@@ -16,9 +16,6 @@ import com.wix.redditclient.model.RedditChild;
 import com.wix.redditclient.model.RedditPost;
 import com.wix.redditclient.viewmodels.RedditViewModel;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.inject.Inject;
 
 import dagger.android.support.DaggerFragment;

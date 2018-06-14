@@ -1,5 +1,6 @@
 package com.wix.redditclient;
 
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
@@ -18,6 +19,8 @@ import com.wix.redditclient.di.VMFactory;
 import com.wix.redditclient.model.DecorationInfo;
 import com.wix.redditclient.model.RedditChild;
 import com.wix.redditclient.viewmodels.FavouritesViewModel;
+
+import java.util.ArrayList;
 
 import javax.inject.Inject;
 
@@ -56,7 +59,7 @@ public class WebViewFragment extends DaggerFragment implements View.OnClickListe
         binding = WebViewFragmentBinding.inflate(inflater, container, false);
         viewModel = ViewModelProviders.of(getActivity(), vmFactory).get(FavouritesViewModel.class);
         binding.add.setOnClickListener(this);
-        binding.remove.setOnClickListener(this);
+        viewModel.getFavourites().observe(getActivity(), this::updateButton);
         binding.details.getSettings().setJavaScriptEnabled(true);
         binding.details.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
         binding.details.setWebViewClient(new WebViewClient() {
@@ -78,6 +81,11 @@ public class WebViewFragment extends DaggerFragment implements View.OnClickListe
         return binding.getRoot();
     }
 
+    private void updateButton(ArrayList<RedditChild> children) {
+        boolean isFavourite = children.contains(getArguments().getParcelable(REDDIT_POST));
+        binding.add.setText(isFavourite ? R.string.remove_from_favourites : R.string.save_to_favourites);
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -97,10 +105,6 @@ public class WebViewFragment extends DaggerFragment implements View.OnClickListe
         switch (v.getId()) {
             case R.id.add:
                 viewModel.addToFavourites(getArguments().getParcelable(REDDIT_POST));
-                break;
-            case R.id.remove:
-                viewModel.removeFromFavourites(getArguments().getParcelable(REDDIT_POST));
-                break;
             default:
                 break;
         }

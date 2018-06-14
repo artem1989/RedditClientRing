@@ -20,11 +20,13 @@ public class FavouritesViewModel extends ViewModel {
     }
 
     public void addToFavourites(RedditChild item) {
-        favourites.getValue().add(item);
-    }
-
-    public void removeFromFavourites(RedditChild item) {
-        favourites.getValue().remove(item);
+        ArrayList<RedditChild> items = favourites.getValue();
+        if(items.contains(item)) {
+            items.remove(item);
+        } else {
+            items.add(item);
+        }
+        favourites.setValue(items);
     }
 
     public LiveData<ArrayList<RedditChild>> getFavourites() {
