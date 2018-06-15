@@ -1,4 +1,4 @@
-package com.wix.redditclient;
+package com.wix.redditclient.ui;
 
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;

@@ -1,8 +1,8 @@
 package com.wix.redditclient.di;
 
-import com.wix.redditclient.FavouritesRedditFragment;
-import com.wix.redditclient.MainRedditFragment;
-import com.wix.redditclient.WebViewFragment;
+import com.wix.redditclient.ui.FavouritesRedditFragment;
+import com.wix.redditclient.ui.MainRedditFragment;
+import com.wix.redditclient.ui.WebViewFragment;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;

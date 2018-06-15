@@ -4,6 +4,9 @@ import android.content.Context;
 import android.databinding.BindingAdapter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.widget.ImageView;
 
 import com.github.wrdlbrnft.sortedlistadapter.SortedListAdapter;
@@ -49,6 +52,15 @@ public class Utils {
                 .load(imageUrl)
                 .placeholder(R.drawable.placeholder)
                 .into(view);
+    }
+
+    public static Fragment getTopmostVisibleFragment(@NonNull FragmentManager manager) {
+        Fragment shownFragment = null;
+        for (Fragment fragment : manager.getFragments()) {
+            if (fragment != null && fragment.isVisible())
+                shownFragment = fragment;
+        }
+        return shownFragment;
     }
 
 }

@@ -1,4 +1,4 @@
-package com.wix.redditclient;
+package com.wix.redditclient.ui;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -13,6 +13,8 @@ import java.util.Comparator;
 
 
 public class RedditPostsAdapter extends SortedListAdapter<RedditChild> {
+
+    private final Listener mListener;
 
     class ViewHolder extends SortedListAdapter.ViewHolder<RedditChild> {
 
@@ -30,12 +32,6 @@ public class RedditPostsAdapter extends SortedListAdapter<RedditChild> {
         }
     }
 
-    public interface Listener {
-        void onChildClicked(RedditChild model);
-    }
-
-    private final Listener mListener;
-
     RedditPostsAdapter(Context context, Comparator<RedditChild> comparator, Listener listener) {
         super(context, RedditChild.class, comparator);
         mListener = listener;
@@ -46,5 +42,9 @@ public class RedditPostsAdapter extends SortedListAdapter<RedditChild> {
     protected SortedListAdapter.ViewHolder<? extends RedditChild> onCreateViewHolder(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent, int viewType) {
         final ListItemBinding binding = ListItemBinding.inflate(inflater, parent, false);
         return new ViewHolder(binding, mListener);
+    }
+
+    public interface Listener {
+        void onChildClicked(RedditChild model);
     }
 }

@@ -1,4 +1,4 @@
-package com.wix.redditclient;
+package com.wix.redditclient.ui;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -7,15 +7,18 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.view.MenuItem;
+import android.view.View;
 
+import com.wix.redditclient.R;
 import com.wix.redditclient.databinding.MainActivityBinding;
-import com.wix.redditclient.model.DecorationInfo;
 
 import javax.inject.Inject;
 
 import dagger.android.support.DaggerAppCompatActivity;
 
-public class MainActivity extends DaggerAppCompatActivity implements WebViewFragment.OnDecorateToolbarlistener{
+import static com.wix.redditclient.common.Utils.getTopmostVisibleFragment;
+
+public class MainActivity extends DaggerAppCompatActivity {
 
     MainActivityBinding binding;
 
@@ -29,16 +32,16 @@ public class MainActivity extends DaggerAppCompatActivity implements WebViewFrag
         setSupportActionBar(binding.toolbar);
         SectionsPagerAdapter adapter = new SectionsPagerAdapter(getSupportFragmentManager(), binding.tabs.getTabCount());
         binding.container.setAdapter(adapter);
-        binding.container.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(binding.tabs){
+        binding.container.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(binding.tabs) {
             @Override
             public void onPageSelected(final int position) {
-                if(adapter.instantiateItem(binding.container, position) instanceof OnFragmentSelectedListener){
+                if (adapter.instantiateItem(binding.container, position) instanceof OnFragmentSelectedListener) {
                     OnFragmentSelectedListener fragment = (OnFragmentSelectedListener) adapter.instantiateItem(binding.container, position);
                     fragment.onFragmentSelected();
                 }
             }
         });
-        binding.tabs.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(binding.container){
+        binding.tabs.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(binding.container) {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 binding.container.setCurrentItem(tab.getPosition());
@@ -49,6 +52,20 @@ public class MainActivity extends DaggerAppCompatActivity implements WebViewFrag
                 binding.container.setCurrentItem(tab.getPosition());
             }
         });
+        getSupportFragmentManager().addOnBackStackChangedListener(this::decorateToolbar);
+    }
+
+    private void decorateToolbar() {
+        Fragment topFragment = getTopmostVisibleFragment(getSupportFragmentManager());
+
+        if (topFragment != null) {
+            boolean isRootFragment = topFragment instanceof MainRedditFragment || topFragment instanceof FavouritesRedditFragment;
+
+            getSupportActionBar().setDisplayShowHomeEnabled(!isRootFragment);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(!isRootFragment);
+            getSupportActionBar().setDisplayShowTitleEnabled(isRootFragment);
+            binding.tabs.setVisibility(isRootFragment ? View.VISIBLE : View.GONE);
+        }
     }
 
     @Override
@@ -60,14 +77,6 @@ public class MainActivity extends DaggerAppCompatActivity implements WebViewFrag
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    @Override
-    public void decorate(DecorationInfo info) {
-        getSupportActionBar().setDisplayShowHomeEnabled(info.isShowBackArrow());
-        getSupportActionBar().setDisplayHomeAsUpEnabled(info.isShowBackArrow());
-        getSupportActionBar().setDisplayShowTitleEnabled(info.isShowTitle());
-        //binding.tabs.setVisibility(info.isShowTabs() ? View.VISIBLE : View.GONE);
     }
 
     public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
@@ -87,7 +96,7 @@ public class MainActivity extends DaggerAppCompatActivity implements WebViewFrag
                 case FIRST_TAB:
                     return MainRedditFragment.newInstance();
                 case SECOND_TAB:
-                    default:
+                default:
                     return FavouritesRedditFragment.newInstance();
             }
         }

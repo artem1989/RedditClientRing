@@ -1,6 +1,6 @@
 package com.wix.redditclient.di;
 
-import com.wix.redditclient.MainActivity;
+import com.wix.redditclient.ui.MainActivity;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;

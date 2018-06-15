@@ -1,4 +1,4 @@
-package com.wix.redditclient;
+package com.wix.redditclient.ui;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
 import com.github.wrdlbrnft.sortedlistadapter.SortedListAdapter;
+import com.wix.redditclient.R;
 import com.wix.redditclient.databinding.MainRedditFragmentBinding;
 import com.wix.redditclient.di.VMFactory;
 import com.wix.redditclient.model.DecorationInfo;
@@ -44,7 +45,6 @@ public class MainRedditFragment extends DaggerFragment implements SortedListAdap
     MainRedditFragmentBinding binding;
     private Animator mAnimator;
 
-    private WebViewFragment.OnDecorateToolbarlistener listener;
     private RedditPostsAdapter adapter;
     private RedditViewModel viewModel;
 
@@ -62,14 +62,6 @@ public class MainRedditFragment extends DaggerFragment implements SortedListAdap
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof WebViewFragment.OnDecorateToolbarlistener) {
-            listener = (WebViewFragment.OnDecorateToolbarlistener) context;
-        }
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = MainRedditFragmentBinding.inflate(inflater, container, false);
         viewModel = ViewModelProviders.of(this, vmFactory).get(RedditViewModel.class);
@@ -81,16 +73,6 @@ public class MainRedditFragment extends DaggerFragment implements SortedListAdap
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setHasOptionsMenu(true);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        DecorationInfo info = new DecorationInfo();
-        info.setShowBackArrow(false);
-        info.setShowTitle(true);
-        info.setShowTabs(true);
-        listener.decorate(info);
     }
 
     private void initPosts(RedditPost redditPost) {

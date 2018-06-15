@@ -1,8 +1,10 @@
-package com.wix.redditclient;
+package com.wix.redditclient.ui;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+
+import com.wix.redditclient.R;
 
 import javax.inject.Inject;
 

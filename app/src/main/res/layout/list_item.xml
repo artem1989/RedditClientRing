@@ -6,7 +6,7 @@
 
     <variable
       name="listener"
-      type="com.wix.redditclient.RedditPostsAdapter.Listener" />
+      type="com.wix.redditclient.ui.RedditPostsAdapter.Listener" />
 
     <variable
       name="model"

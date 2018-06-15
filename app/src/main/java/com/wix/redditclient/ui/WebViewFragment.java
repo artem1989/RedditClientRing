@@ -1,4 +1,4 @@
-package com.wix.redditclient;
+package com.wix.redditclient.ui;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
@@ -12,6 +12,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.wix.redditclient.R;
 import com.wix.redditclient.databinding.WebViewFragmentBinding;
 import com.wix.redditclient.di.VMFactory;
 import com.wix.redditclient.model.DecorationInfo;
@@ -29,7 +30,6 @@ public class WebViewFragment extends DaggerFragment implements View.OnClickListe
     private static final String REDDIT_POST = "post";
 
     private WebViewFragmentBinding binding;
-    private OnDecorateToolbarlistener listener;
     private FavouritesViewModel viewModel;
 
     @Inject
@@ -41,14 +41,6 @@ public class WebViewFragment extends DaggerFragment implements View.OnClickListe
         args.putParcelable(REDDIT_POST, child);
         fragment.setArguments(args);
         return fragment;
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnDecorateToolbarlistener) {
-            listener = (OnDecorateToolbarlistener) context;
-        }
     }
 
     @Nullable
@@ -85,15 +77,6 @@ public class WebViewFragment extends DaggerFragment implements View.OnClickListe
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        DecorationInfo info = new DecorationInfo();
-        info.setShowBackArrow(true);
-        info.setShowTitle(true);
-        listener.decorate(info);
-    }
-
-    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
     }
@@ -108,7 +91,4 @@ public class WebViewFragment extends DaggerFragment implements View.OnClickListe
         }
     }
 
-    public interface OnDecorateToolbarlistener {
-        void decorate(DecorationInfo info);
-    }
 }

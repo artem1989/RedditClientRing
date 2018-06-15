@@ -1,4 +1,4 @@
-package com.wix.redditclient;
+package com.wix.redditclient.ui;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.wix.redditclient.R;
 import com.wix.redditclient.databinding.FavouritesRedditFragmentBinding;
 import com.wix.redditclient.di.VMFactory;
 import com.wix.redditclient.viewmodels.FavouritesViewModel;
@@ -50,8 +51,14 @@ public class FavouritesRedditFragment extends DaggerFragment implements MainActi
         binding.favourites.setHasFixedSize(true);
         binding.favourites.setLayoutManager(new LinearLayoutManager(getActivity()));
         binding.favourites.setAdapter(adapter);
-        //adapter.edit().replaceAll(viewModel.getFavourites().getValue()).commit();
+
         return binding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        setHasOptionsMenu(false);
     }
 
     @Override
