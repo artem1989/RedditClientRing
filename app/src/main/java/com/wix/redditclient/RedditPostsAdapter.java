@@ -2,20 +2,14 @@ package com.wix.redditclient;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.github.wrdlbrnft.sortedlistadapter.SortedListAdapter;
-import com.squareup.picasso.Picasso;
 import com.wix.redditclient.databinding.ListItemBinding;
 import com.wix.redditclient.model.RedditChild;
 
 import java.util.Comparator;
-import java.util.List;
 
 
 public class RedditPostsAdapter extends SortedListAdapter<RedditChild> {
@@ -34,7 +28,6 @@ public class RedditPostsAdapter extends SortedListAdapter<RedditChild> {
         protected void performBind(@NonNull RedditChild item) {
             mBinding.setModel(item);
         }
-
     }
 
     public interface Listener {

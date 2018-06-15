@@ -6,8 +6,6 @@ import android.support.annotation.NonNull;
 
 import com.github.wrdlbrnft.sortedlistadapter.SortedListAdapter;
 
-import java.io.Serializable;
-
 public class RedditChild implements Parcelable, SortedListAdapter.ViewModel {
 
     private String kind;

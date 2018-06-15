@@ -1,24 +1,15 @@
 package com.wix.redditclient;
 
-import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v7.widget.SearchView;
-import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.wix.redditclient.databinding.MainActivityBinding;
-import com.wix.redditclient.di.VMFactory;
 import com.wix.redditclient.model.DecorationInfo;
-import com.wix.redditclient.viewmodels.FavouritesViewModel;
-import com.wix.redditclient.viewmodels.RedditViewModel;
 
 import javax.inject.Inject;
 
