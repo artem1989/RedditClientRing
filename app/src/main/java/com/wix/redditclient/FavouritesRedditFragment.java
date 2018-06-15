@@ -17,6 +17,8 @@ import javax.inject.Inject;
 
 import dagger.android.support.DaggerFragment;
 
+import static com.wix.redditclient.common.Utils.COMPARATOR;
+
 public class FavouritesRedditFragment extends DaggerFragment implements MainActivity.OnFragmentSelectedListener{
 
     FavouritesRedditFragmentBinding binding;
@@ -25,6 +27,9 @@ public class FavouritesRedditFragment extends DaggerFragment implements MainActi
 
     @Inject
     VMFactory vmFactory;
+
+    @Inject
+    MainNavigator navigator;
 
     public static FavouritesRedditFragment newInstance() {
         FavouritesRedditFragment fragment = new FavouritesRedditFragment();
@@ -38,16 +43,20 @@ public class FavouritesRedditFragment extends DaggerFragment implements MainActi
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FavouritesRedditFragmentBinding.inflate(inflater, container, false);
         viewModel = ViewModelProviders.of(getActivity(), vmFactory).get(FavouritesViewModel.class);
-        adapter = new RedditPostsAdapter(viewModel.getFavourites().getValue(), v -> {});
+        adapter = new RedditPostsAdapter(getActivity(), COMPARATOR, item -> {
+            WebViewFragment details = WebViewFragment.newInstance(item);
+            navigator.navigateTo(R.id.main_content, details, true);
+        });
         binding.favourites.setHasFixedSize(true);
         binding.favourites.setLayoutManager(new LinearLayoutManager(getActivity()));
         binding.favourites.setAdapter(adapter);
+        //adapter.edit().replaceAll(viewModel.getFavourites().getValue()).commit();
         return binding.getRoot();
     }
 
     @Override
     public void onFragmentSelected() {
-        adapter.setData(viewModel.getFavourites().getValue());
+        adapter.edit().replaceAll(viewModel.getFavourites().getValue()).commit();
         adapter.notifyDataSetChanged();
     }
 }

@@ -8,6 +8,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.SearchView;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -27,8 +30,6 @@ public class MainActivity extends DaggerAppCompatActivity implements WebViewFrag
 
     @Inject
     MainNavigator navigator;
-
-    OnFragmentSelectedListener listener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +81,8 @@ public class MainActivity extends DaggerAppCompatActivity implements WebViewFrag
 
     public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
 
+        static final int FIRST_TAB = 0;
+        static final int SECOND_TAB = 1;
         int mNumOfTabs;
 
         SectionsPagerAdapter(FragmentManager fm, int mNumTabs) {
@@ -90,9 +93,9 @@ public class MainActivity extends DaggerAppCompatActivity implements WebViewFrag
         @Override
         public Fragment getItem(int position) {
             switch (position) {
-                case 0:
+                case FIRST_TAB:
                     return MainRedditFragment.newInstance();
-                case 1:
+                case SECOND_TAB:
                     default:
                     return FavouritesRedditFragment.newInstance();
             }

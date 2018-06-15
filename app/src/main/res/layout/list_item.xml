@@ -1,28 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:app="http://schemas.android.com/apk/res-auto"
-  android:layout_width="match_parent"
-  android:layout_height="70dp">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools">
 
-  <ImageView
-    android:id="@+id/imageView"
-    android:layout_width="50dp"
-    android:layout_height="50dp"
-    android:layout_marginStart="16dp"
-    android:layout_marginTop="8dp"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent"
-    android:src="@drawable/placeholder" />
+  <data>
 
-  <TextView
-    android:id="@+id/title"
-    android:layout_width="wrap_content"
+    <variable
+      name="listener"
+      type="com.wix.redditclient.RedditPostsAdapter.Listener" />
+
+    <variable
+      name="model"
+      type="com.wix.redditclient.model.RedditChild" />
+
+  </data>
+
+  <LinearLayout
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="8dp"
-    android:layout_marginStart="8dp"
-    android:layout_marginTop="8dp"
-    android:text="TextView"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintStart_toEndOf="@+id/imageView"
-    app:layout_constraintTop_toTopOf="parent" />
-</android.support.constraint.ConstraintLayout>
+    android:background="?attr/selectableItemBackground"
+    android:clickable="true"
+    android:gravity="center_vertical"
+    android:onClick="@{view -> listener.onChildClicked(model)}">
+
+    <ImageView
+      android:id="@+id/imageView"
+      android:layout_width="50dp"
+      android:layout_height="50dp"
+      android:padding="8dp"
+      android:src="@drawable/placeholder" />
+
+    <TextView
+      android:id="@+id/title"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:padding="8dp"
+      android:layout_marginStart="8dp"
+      android:layout_marginLeft="8dp"
+      android:textSize="16sp"
+      android:text="@{model.data.title}" />
+
+  </LinearLayout>
+</layout>

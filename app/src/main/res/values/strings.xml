@@ -7,4 +7,5 @@
   <string name="section_format">Hello World from section: %1$d</string>
   <string name="remove_from_favourites">Remove</string>
   <string name="save_to_favourites">Save</string>
+  <string name="action_search">Search</string>
 </resources>

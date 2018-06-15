@@ -1,5 +1,6 @@
 package com.wix.redditclient;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -8,71 +9,49 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.github.wrdlbrnft.sortedlistadapter.SortedListAdapter;
 import com.squareup.picasso.Picasso;
+import com.wix.redditclient.databinding.ListItemBinding;
 import com.wix.redditclient.model.RedditChild;
 
+import java.util.Comparator;
 import java.util.List;
 
 
-public class RedditPostsAdapter extends RecyclerView.Adapter<RedditPostsAdapter.ViewHolder> {
+public class RedditPostsAdapter extends SortedListAdapter<RedditChild> {
 
-    private List<RedditChild> posts;
-    private OnItemClickListener listener;
+    class ViewHolder extends SortedListAdapter.ViewHolder<RedditChild> {
 
-    public void addData(List<RedditChild> children) {
-        posts.addAll(children);
-    }
+        private final ListItemBinding mBinding;
 
-    public void setData(List<RedditChild> children) {
-        posts = children;
-    }
-
-    public interface OnItemClickListener {
-        void onItemClick(RedditChild item);
-    }
-
-    class ViewHolder extends RecyclerView.ViewHolder {
-
-        View itemView;
-        TextView title;
-        ImageView image;
-
-        ViewHolder(View viewGroup) {
-            super(viewGroup);
-            this.itemView = viewGroup;
-            this.title = viewGroup.findViewById(R.id.title);
-            this.image = viewGroup.findViewById(R.id.imageView);
+        ViewHolder(ListItemBinding binding, RedditPostsAdapter.Listener listener) {
+            super(binding.getRoot());
+            binding.setListener(listener);
+            mBinding = binding;
         }
 
-        void bindData(final RedditChild post) {
-            itemView.setOnClickListener(v -> listener.onItemClick(post));
-            title.setText(post.getData().getTitle());
-            Picasso.get().load(post.getData().getThumbnail()).placeholder(R.drawable.placeholder).fit()
-                    .tag(itemView.getContext())
-                    .into(image);
-
+        @Override
+        protected void performBind(@NonNull RedditChild item) {
+            mBinding.setModel(item);
         }
 
     }
 
-    RedditPostsAdapter(List<RedditChild> posts, OnItemClickListener listener) {
-        this.posts = posts;
-        this.listener = listener;
+    public interface Listener {
+        void onChildClicked(RedditChild model);
+    }
+
+    private final Listener mListener;
+
+    RedditPostsAdapter(Context context, Comparator<RedditChild> comparator, Listener listener) {
+        super(context, RedditChild.class, comparator);
+        mListener = listener;
     }
 
     @NonNull
     @Override
-    public RedditPostsAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false));
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.bindData(posts.get(position));
-    }
-
-    @Override
-    public int getItemCount() {
-        return posts.size();
+    protected SortedListAdapter.ViewHolder<? extends RedditChild> onCreateViewHolder(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent, int viewType) {
+        final ListItemBinding binding = ListItemBinding.inflate(inflater, parent, false);
+        return new ViewHolder(binding, mListener);
     }
 }
