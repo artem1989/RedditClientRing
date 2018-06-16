@@ -105,6 +105,6 @@ public class MainRedditFragment extends DaggerFragment implements SearchView.OnQ
     @Override
     public boolean onQueryTextChange(String query) {
         adapter.getFilter().filter(query);
-        return true;
+        return false;
     }
 }

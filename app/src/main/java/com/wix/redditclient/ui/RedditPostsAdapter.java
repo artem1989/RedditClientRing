@@ -24,14 +24,18 @@ public class RedditPostsAdapter extends RecyclerView.Adapter<RedditPostsAdapter.
     private List<RedditChild> filteredPosts;
     private OnItemClickListener listener;
 
+    RedditPostsAdapter(List<RedditChild> posts, OnItemClickListener listener) {
+        this.posts = posts;
+        this.filteredPosts = posts;
+        this.listener = listener;
+    }
+
     public void addData(List<RedditChild> children) {
         posts.addAll(children);
     }
 
     public void setData(List<RedditChild> children) {
-        posts.clear();
-        posts.addAll(children);
-        notifyDataSetChanged();
+        posts = children;
     }
 
     @Override
@@ -40,7 +44,6 @@ public class RedditPostsAdapter extends RecyclerView.Adapter<RedditPostsAdapter.
             @Override
             protected FilterResults performFiltering(CharSequence charSequence) {
                 String query = charSequence.toString();
-                final String lowerCaseQuery = query.toLowerCase();
 
                 final List<RedditChild> filteredModelList = new ArrayList<>();
                 if (query.isEmpty()) {
@@ -48,7 +51,7 @@ public class RedditPostsAdapter extends RecyclerView.Adapter<RedditPostsAdapter.
                 } else {
                     for (RedditChild model : posts) {
                         final String text = model.getData().getTitle().toLowerCase();
-                        if (text.contains(lowerCaseQuery)) {
+                        if (text.contains(query.toLowerCase())) {
                             filteredModelList.add(model);
                         }
                     }
@@ -62,14 +65,10 @@ public class RedditPostsAdapter extends RecyclerView.Adapter<RedditPostsAdapter.
 
             @Override
             protected void publishResults(CharSequence charSequence, FilterResults results) {
-                filteredPosts = (ArrayList<RedditChild>) results.values;
+                filteredPosts = (List<RedditChild>) results.values;
                 notifyDataSetChanged();
             }
         };
-    }
-
-    public interface OnItemClickListener {
-        void onItemClick(RedditChild item);
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -96,10 +95,8 @@ public class RedditPostsAdapter extends RecyclerView.Adapter<RedditPostsAdapter.
 
     }
 
-    RedditPostsAdapter(List<RedditChild> posts, OnItemClickListener listener) {
-        this.posts = posts;
-        this.filteredPosts = posts;
-        this.listener = listener;
+    public interface OnItemClickListener {
+        void onItemClick(RedditChild item);
     }
 
     @NonNull
