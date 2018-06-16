@@ -1,50 +1,120 @@
 package com.wix.redditclient.ui;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
+import android.widget.ImageView;
+import android.widget.TextView;
 
-import com.github.wrdlbrnft.sortedlistadapter.SortedListAdapter;
-import com.wix.redditclient.databinding.ListItemBinding;
+import com.squareup.picasso.Picasso;
+import com.wix.redditclient.R;
 import com.wix.redditclient.model.RedditChild;
 
-import java.util.Comparator;
+import java.util.ArrayList;
+import java.util.List;
 
 
-public class RedditPostsAdapter extends SortedListAdapter<RedditChild> {
+public class RedditPostsAdapter extends RecyclerView.Adapter<RedditPostsAdapter.ViewHolder> implements Filterable {
 
-    private final Listener mListener;
+    private List<RedditChild> posts;
+    private List<RedditChild> filteredPosts;
+    private OnItemClickListener listener;
 
-    class ViewHolder extends SortedListAdapter.ViewHolder<RedditChild> {
-
-        private final ListItemBinding mBinding;
-
-        ViewHolder(ListItemBinding binding, RedditPostsAdapter.Listener listener) {
-            super(binding.getRoot());
-            binding.setListener(listener);
-            mBinding = binding;
-        }
-
-        @Override
-        protected void performBind(@NonNull RedditChild item) {
-            mBinding.setModel(item);
-        }
+    public void addData(List<RedditChild> children) {
+        posts.addAll(children);
     }
 
-    RedditPostsAdapter(Context context, Comparator<RedditChild> comparator, Listener listener) {
-        super(context, RedditChild.class, comparator);
-        mListener = listener;
+    public void setData(List<RedditChild> children) {
+        posts.clear();
+        posts.addAll(children);
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
+                String query = charSequence.toString();
+                final String lowerCaseQuery = query.toLowerCase();
+
+                final List<RedditChild> filteredModelList = new ArrayList<>();
+                if (query.isEmpty()) {
+                    filteredPosts = posts;
+                } else {
+                    for (RedditChild model : posts) {
+                        final String text = model.getData().getTitle().toLowerCase();
+                        if (text.contains(lowerCaseQuery)) {
+                            filteredModelList.add(model);
+                        }
+                    }
+                }
+
+                FilterResults results = new FilterResults();
+                results.count = filteredModelList.size();
+                results.values = filteredModelList;
+                return results;
+            }
+
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults results) {
+                filteredPosts = (ArrayList<RedditChild>) results.values;
+                notifyDataSetChanged();
+            }
+        };
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(RedditChild item);
+    }
+
+    class ViewHolder extends RecyclerView.ViewHolder {
+
+        View itemView;
+        TextView title;
+        ImageView image;
+
+        ViewHolder(View viewGroup) {
+            super(viewGroup);
+            this.itemView = viewGroup;
+            this.title = viewGroup.findViewById(R.id.title);
+            this.image = viewGroup.findViewById(R.id.imageView);
+        }
+
+        void bindData(final RedditChild post) {
+            itemView.setOnClickListener(v -> listener.onItemClick(post));
+            title.setText(post.getData().getTitle());
+            Picasso.get().load(post.getData().getThumbnail()).placeholder(R.drawable.placeholder).fit()
+                    .tag(itemView.getContext())
+                    .into(image);
+
+        }
+
+    }
+
+    RedditPostsAdapter(List<RedditChild> posts, OnItemClickListener listener) {
+        this.posts = posts;
+        this.filteredPosts = posts;
+        this.listener = listener;
     }
 
     @NonNull
     @Override
-    protected SortedListAdapter.ViewHolder<? extends RedditChild> onCreateViewHolder(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent, int viewType) {
-        final ListItemBinding binding = ListItemBinding.inflate(inflater, parent, false);
-        return new ViewHolder(binding, mListener);
+    public RedditPostsAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false));
     }
 
-    public interface Listener {
-        void onChildClicked(RedditChild model);
+    @Override
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        holder.bindData(filteredPosts.get(position));
+    }
+
+    @Override
+    public int getItemCount() {
+        return filteredPosts.size();
     }
 }

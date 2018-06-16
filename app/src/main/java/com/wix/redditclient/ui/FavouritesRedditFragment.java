@@ -18,8 +18,6 @@ import javax.inject.Inject;
 
 import dagger.android.support.DaggerFragment;
 
-import static com.wix.redditclient.common.Utils.COMPARATOR;
-
 public class FavouritesRedditFragment extends DaggerFragment implements MainActivity.OnFragmentSelectedListener{
 
     FavouritesRedditFragmentBinding binding;
@@ -44,7 +42,7 @@ public class FavouritesRedditFragment extends DaggerFragment implements MainActi
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FavouritesRedditFragmentBinding.inflate(inflater, container, false);
         viewModel = ViewModelProviders.of(getActivity(), vmFactory).get(FavouritesViewModel.class);
-        adapter = new RedditPostsAdapter(getActivity(), COMPARATOR, item -> {
+        adapter = new RedditPostsAdapter(viewModel.getFavourites().getValue(),  item -> {
             WebViewFragment details = WebViewFragment.newInstance(item);
             navigator.navigateTo(R.id.main_content, details, true);
         });
@@ -63,7 +61,7 @@ public class FavouritesRedditFragment extends DaggerFragment implements MainActi
 
     @Override
     public void onFragmentSelected() {
-        adapter.edit().replaceAll(viewModel.getFavourites().getValue()).commit();
+        adapter.setData(viewModel.getFavourites().getValue());
         adapter.notifyDataSetChanged();
     }
 }

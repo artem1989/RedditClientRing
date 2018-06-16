@@ -2,11 +2,8 @@ package com.wix.redditclient.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
 
-import com.github.wrdlbrnft.sortedlistadapter.SortedListAdapter;
-
-public class RedditChild implements Parcelable, SortedListAdapter.ViewModel {
+public class RedditChild implements Parcelable {
 
     private String kind;
     private ChildInfo data;
@@ -55,23 +52,5 @@ public class RedditChild implements Parcelable, SortedListAdapter.ViewModel {
         if (data != null) {
             data.writeToParcel(dest, flags);
         }
-    }
-
-    @Override
-    public <T> boolean isSameModelAs(@NonNull T item) {
-        if (item instanceof RedditChild) {
-            final RedditChild child = (RedditChild) item;
-            return child.getKind() != null && child.getKind().equals(kind);
-        }
-        return false;
-    }
-
-    @Override
-    public <T> boolean isContentTheSameAs(@NonNull T item) {
-        if (item instanceof RedditChild) {
-            final RedditChild other = (RedditChild) item;
-            return other.getData().getTitle().equals(data.getTitle());
-        }
-        return false;
     }
 }

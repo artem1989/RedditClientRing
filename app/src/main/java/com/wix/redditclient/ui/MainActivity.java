@@ -12,8 +12,6 @@ import android.view.View;
 import com.wix.redditclient.R;
 import com.wix.redditclient.databinding.MainActivityBinding;
 
-import javax.inject.Inject;
-
 import dagger.android.support.DaggerAppCompatActivity;
 
 import static com.wix.redditclient.common.Utils.getTopmostVisibleFragment;
@@ -21,9 +19,6 @@ import static com.wix.redditclient.common.Utils.getTopmostVisibleFragment;
 public class MainActivity extends DaggerAppCompatActivity {
 
     MainActivityBinding binding;
-
-    @Inject
-    MainNavigator navigator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
