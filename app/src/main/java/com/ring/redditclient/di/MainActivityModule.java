@@ -1,8 +1,7 @@
 package com.ring.redditclient.di;
 
-import com.ring.redditclient.ui.FavouritesRedditFragment;
+import com.ring.redditclient.ui.ImageViewFragment;
 import com.ring.redditclient.ui.MainRedditFragment;
-import com.ring.redditclient.ui.WebViewFragment;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
@@ -17,9 +16,5 @@ public abstract class MainActivityModule {
 
     @FragmentScoped
     @ContributesAndroidInjector
-    abstract WebViewFragment providesWebViewFragment();
-
-    @FragmentScoped
-    @ContributesAndroidInjector
-    abstract FavouritesRedditFragment providesFavouritesFragment();
+    abstract ImageViewFragment providesWebViewFragment();
 }

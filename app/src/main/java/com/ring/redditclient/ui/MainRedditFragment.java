@@ -62,7 +62,7 @@ public class MainRedditFragment extends DaggerFragment implements SearchView.OnQ
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = MainRedditFragmentBinding.inflate(inflater, container, false);
         viewModel = ViewModelProviders.of(this, vmFactory).get(RedditViewModel.class);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        LinearLayoutManager layoutManager = new WrapLinearLayoutManager(getActivity());
         binding.recyclerView.setLayoutManager(layoutManager);
         binding.recyclerView.setHasFixedSize(true);
         adapter = new RedditPostsAdapter(new ArrayList<>(), this::onItemClick);
@@ -92,8 +92,8 @@ public class MainRedditFragment extends DaggerFragment implements SearchView.OnQ
     }
 
     public void onItemClick(RedditChild item) {
-        WebViewFragment details = WebViewFragment.newInstance(item);
-        navigator.navigateTo(R.id.main_content, details, true);
+        ImageViewFragment details = ImageViewFragment.newInstance(item);
+        navigator.navigateTo(R.id.container, details, true);
     }
 
     @Override

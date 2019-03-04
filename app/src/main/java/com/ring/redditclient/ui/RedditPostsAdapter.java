@@ -17,7 +17,6 @@ import com.ring.redditclient.model.RedditChild;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class RedditPostsAdapter extends RecyclerView.Adapter<RedditPostsAdapter.ViewHolder> implements Filterable {
 
     private List<RedditChild> posts;
@@ -30,7 +29,7 @@ public class RedditPostsAdapter extends RecyclerView.Adapter<RedditPostsAdapter.
         this.listener = listener;
     }
 
-    public void addData(List<RedditChild> children) {
+    void addData(List<RedditChild> children) {
         posts.addAll(children);
     }
 
@@ -75,6 +74,8 @@ public class RedditPostsAdapter extends RecyclerView.Adapter<RedditPostsAdapter.
 
         View itemView;
         TextView title;
+        TextView author;
+        TextView comments;
         ImageView image;
 
         ViewHolder(View viewGroup) {
@@ -82,11 +83,15 @@ public class RedditPostsAdapter extends RecyclerView.Adapter<RedditPostsAdapter.
             this.itemView = viewGroup;
             this.title = viewGroup.findViewById(R.id.title);
             this.image = viewGroup.findViewById(R.id.imageView);
+            this.author = viewGroup.findViewById(R.id.author);
+            this.comments = viewGroup.findViewById(R.id.comments);
         }
 
         void bindData(final RedditChild post) {
             itemView.setOnClickListener(v -> listener.onItemClick(post));
             title.setText(post.getData().getTitle());
+            author.setText(post.getData().getAuthor());
+            comments.setText(post.getData().getNum_comments());
             Picasso.get().load(post.getData().getThumbnail()).placeholder(R.drawable.placeholder).fit()
                     .tag(itemView.getContext())
                     .into(image);

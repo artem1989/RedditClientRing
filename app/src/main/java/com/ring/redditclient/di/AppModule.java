@@ -7,6 +7,7 @@ import android.preference.PreferenceManager;
 
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.ring.redditclient.repository.Data;
+import com.ring.redditclient.ui.ImageLoader;
 
 import java.io.File;
 
